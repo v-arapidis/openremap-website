@@ -71,7 +71,16 @@ function getDocsByCategory(): Record<string, DocEntry[]> {
 export const metadata = {
   title: "Documentation",
   description:
-    "OpenRemap documentation — guides, command reference, and manufacturer-specific information for the open-source ECU binary toolkit.",
+    "OpenRemap documentation — installation guides, CLI command reference, confidence scoring, recipe format, and manufacturer-specific documentation for Bosch, Siemens, Delphi, and Marelli ECUs.",
+  openGraph: {
+    title: "Documentation | OpenRemap",
+    description:
+      "Guides, command reference, and manufacturer-specific documentation for the open-source ECU binary toolkit.",
+    url: "https://openremap.com/docs",
+  },
+  alternates: {
+    canonical: "https://openremap.com/docs",
+  },
 };
 
 export default function DocsIndexPage() {

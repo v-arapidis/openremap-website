@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Search } from "lucide-react";
 import { DOC_CATEGORIES, DOC_MANIFEST, type DocEntry } from "@/lib/docs";
 
 function getDocsByCategory(): Record<string, DocEntry[]> {
@@ -86,11 +87,14 @@ function CategorySection({
 export default function DocsSidebar() {
   const pathname = usePathname();
   const grouped = getDocsByCategory();
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Determine which category contains the current page so we can auto-expand it
   const activeCategory = DOC_MANIFEST.find(
     (entry) => pathname === slugToHref(entry.slug),
   )?.category;
+
+  const query = searchQuery.toLowerCase().trim();
 
   return (
     <nav
@@ -106,18 +110,42 @@ export default function DocsSidebar() {
         </Link>
       </div>
 
+      <div className="mb-4 px-3">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-500" />
+          <input
+            type="text"
+            placeholder="Search docs..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full rounded-md border border-neutral-800 bg-neutral-900/50 py-1.5 pl-8 pr-3 text-sm text-neutral-300 placeholder:text-neutral-600 focus:border-neutral-700 focus:outline-none focus:ring-1 focus:ring-neutral-700"
+          />
+        </div>
+      </div>
+
       {DOC_CATEGORIES.map((category) => {
         const entries = grouped[category];
         if (!entries || entries.length === 0) return null;
 
+        const filtered = query
+          ? entries.filter(
+              (e) =>
+                e.title.toLowerCase().includes(query) ||
+                category.toLowerCase().includes(query),
+            )
+          : entries;
+        if (filtered.length === 0) return null;
+
         return (
           <CategorySection
-            key={category}
+            key={query ? `${category}-search` : category}
             category={category}
-            entries={entries}
+            entries={filtered}
             pathname={pathname}
             defaultOpen={
-              category === activeCategory || category === "Getting Started"
+              query
+                ? true
+                : category === activeCategory || category === "Getting Started"
             }
           />
         );

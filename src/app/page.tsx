@@ -1,118 +1,229 @@
-import { Search, ClipboardList, Zap, FolderSearch } from "lucide-react";
+import { Suspense } from "react";
 import CopyButton from "@/components/CopyButton";
+import LandingTabs from "@/components/LandingTabs";
+import { fetchLatestRelease } from "@/lib/changelog";
 
-const features: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}[] = [
-  {
-    icon: <Search className="h-6 w-6" />,
-    title: "Identify",
-    description:
-      "Read any ECU binary and extract manufacturer, family, hardware number, software version, and calibration data in under a second.",
-  },
-  {
-    icon: <ClipboardList className="h-6 w-6" />,
-    title: "Cook",
-    description:
-      "Diff a stock and tuned binary byte-by-byte into a portable .remap recipe — a structured JSON file listing every changed byte with context anchors.",
-  },
-  {
-    icon: <Zap className="h-6 w-6" />,
-    title: "Tune",
-    description:
-      "Apply a recipe to a target binary with full pre-flight validation. All-or-nothing — partial patches never happen.",
-  },
-  {
-    icon: <FolderSearch className="h-6 w-6" />,
-    title: "Scan",
-    description:
-      "Batch-identify every binary in a folder. Sort them by manufacturer and ECU family. Flag suspicious files before you touch them.",
-  },
-];
+const LABEL_STYLES: Record<string, string> = {
+  Fixed: "bg-emerald-500/10 border-emerald-500/30 text-emerald-400",
+  New: "bg-blue-500/10 border-blue-500/30 text-blue-400",
+  Changed: "bg-yellow-500/10 border-yellow-500/30 text-yellow-400",
+  Deprecated: "bg-orange-500/10 border-orange-500/30 text-orange-400",
+  Removed: "bg-red-500/10 border-red-500/30 text-red-400",
+  Security: "bg-purple-500/10 border-purple-500/30 text-purple-400",
+  Tests: "bg-neutral-500/10 border-neutral-500/30 text-neutral-400",
+};
 
-const pipelineSteps = [
-  {
-    step: 1,
-    title: "Identify",
-    description:
-      "Feed in a raw binary. OpenRemap fingerprints it against 30 extractors and returns structured metadata with a confidence score.",
-  },
-  {
-    step: 2,
-    title: "Cook",
-    description:
-      "Supply a stock and tuned binary pair. OpenRemap diffs them byte-by-byte and outputs a portable .remap recipe file.",
-  },
-  {
-    step: 3,
-    title: "Validate",
-    description:
-      "Before anything is written, every recipe is validated against the target binary — manufacturer, family, and length must all match.",
-  },
-  {
-    step: 4,
-    title: "Tune",
-    description:
-      "Apply the recipe to produce a patched binary. The operation is atomic — if any check fails, nothing is written.",
-  },
-];
+function getLabelStyle(label: string): string {
+  return (
+    LABEL_STYLES[label] ??
+    "bg-neutral-500/10 border-neutral-500/30 text-neutral-400"
+  );
+}
 
-const confidenceLevels = [
-  {
-    level: "HIGH",
-    color: "text-emerald-400",
-    bg: "bg-emerald-500/10 border-emerald-500/30",
-    description: "Strong match on multiple markers — safe to proceed.",
-  },
-  {
-    level: "MEDIUM",
-    color: "text-yellow-400",
-    bg: "bg-yellow-500/10 border-yellow-500/30",
-    description: "Partial match — review the output before acting.",
-  },
-  {
-    level: "LOW",
-    color: "text-orange-400",
-    bg: "bg-orange-500/10 border-orange-500/30",
-    description: "Weak signals only — manual verification recommended.",
-  },
-  {
-    level: "SUSPICIOUS",
-    color: "text-red-400",
-    bg: "bg-red-500/10 border-red-500/30",
-    description: "Contradictory markers detected — do not trust blindly.",
-  },
-  {
-    level: "UNKNOWN",
-    color: "text-neutral-400",
-    bg: "bg-neutral-500/10 border-neutral-500/30",
-    description: "No extractor matched — the binary is unrecognised.",
-  },
-];
+/* ─── Async streamed components (render independently, don't block page) ── */
 
-const coverageData = [
-  {
-    manufacturer: "Bosch",
-    families: 18,
-    examples: "EDC17, EDC16, ME7, M5.x, and more",
-  },
-  { manufacturer: "Siemens", families: 6, examples: "SIMOS, PPD, SID, Simtec" },
-  { manufacturer: "Delphi", families: 2, examples: "Multec, Multec S" },
-  {
-    manufacturer: "Marelli",
-    families: 4,
-    examples: "IAW 1AV, IAW 1AP, IAW 4LV, MJD 6JF",
-  },
-];
+async function VersionBadge() {
+  const release = await fetchLatestRelease();
+  if (!release) return null;
+
+  return (
+    <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-neutral-800 bg-neutral-900/50 px-4 py-1.5 text-sm text-neutral-400">
+      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />v
+      {release.version} —{" "}
+      <a
+        href="/docs/changelog"
+        className="text-emerald-400 hover:text-emerald-300 transition-colors"
+      >
+        See what&apos;s new
+      </a>
+    </div>
+  );
+}
+
+function VersionBadgeSkeleton() {
+  return (
+    <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-neutral-800 bg-neutral-900/50 px-4 py-1.5">
+      <div className="h-2 w-2 rounded-full bg-neutral-700 animate-pulse" />
+      <div className="h-4 w-36 rounded bg-neutral-800 animate-pulse" />
+    </div>
+  );
+}
+
+async function WhatsNew() {
+  const release = await fetchLatestRelease();
+  if (!release || release.entries.length === 0) return null;
+
+  return (
+    <section className="border-t border-neutral-800/60 bg-neutral-900/30 py-24">
+      <div className="mx-auto max-w-3xl px-6 animate-fade-in-up">
+        <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
+          What&apos;s New in v{release.version}
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-center text-neutral-400">
+          {release.summary || "Latest improvements to the toolkit."}
+        </p>
+        <div className="mt-12 space-y-4">
+          {release.entries.map((entry) => (
+            <div
+              key={entry.title}
+              className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-5"
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${getLabelStyle(entry.label)}`}
+                >
+                  {entry.label}
+                </span>
+                <span className="text-sm font-semibold text-white">
+                  {entry.title}
+                </span>
+              </div>
+              <p className="text-sm text-neutral-400">{entry.description}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-8 text-center text-sm text-neutral-500">
+          See the full{" "}
+          <a
+            href="/docs/changelog"
+            className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300"
+          >
+            changelog
+          </a>{" "}
+          for all previous releases.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function WhatsNewSkeleton() {
+  return (
+    <section className="border-t border-neutral-800/60 bg-neutral-900/30 py-24">
+      <div className="mx-auto max-w-3xl px-6">
+        <div className="mx-auto h-9 w-64 rounded-md bg-neutral-800 animate-pulse" />
+        <div className="mx-auto mt-4 h-5 w-80 rounded bg-neutral-800/70 animate-pulse" />
+        <div className="mt-12 space-y-4">
+          <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-5 w-14 rounded-full bg-neutral-800 animate-pulse" />
+              <div className="h-4 w-48 rounded bg-neutral-800 animate-pulse" />
+            </div>
+            <div className="h-4 w-full rounded bg-neutral-800/60 animate-pulse mt-2" />
+            <div className="h-4 w-3/4 rounded bg-neutral-800/60 animate-pulse mt-1.5" />
+          </div>
+          <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-5 w-12 rounded-full bg-neutral-800 animate-pulse" />
+              <div className="h-4 w-40 rounded bg-neutral-800 animate-pulse" />
+            </div>
+            <div className="h-4 w-full rounded bg-neutral-800/60 animate-pulse mt-2" />
+            <div className="h-4 w-2/3 rounded bg-neutral-800/60 animate-pulse mt-1.5" />
+          </div>
+          <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="h-5 w-16 rounded-full bg-neutral-800 animate-pulse" />
+              <div className="h-4 w-44 rounded bg-neutral-800 animate-pulse" />
+            </div>
+            <div className="h-4 w-full rounded bg-neutral-800/60 animate-pulse mt-2" />
+            <div className="h-4 w-1/2 rounded bg-neutral-800/60 animate-pulse mt-1.5" />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Page (non-async, renders instantly as static HTML) ──────────────── */
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-neutral-950 text-white">
+    <div className="min-h-screen bg-neutral-950 text-white">
+      {/* FAQ structured data for Google rich results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: [
+              {
+                "@type": "Question",
+                name: "Does OpenRemap replace WinOLS or ECM Titanium?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. OpenRemap works alongside your calibration tools, not instead of them. WinOLS and ECM Titanium interpret maps, axes, and calibration tables. OpenRemap handles the binary-level plumbing underneath: identifying ECUs, diffing stock vs. tuned files byte-by-byte, and applying those changes reliably to other binaries.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Will OpenRemap corrupt my ECU binary?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. Every tune operation runs full pre-flight validation before a single byte is written — manufacturer, ECU family, file length, and context anchors must all match. If any check fails, the operation is aborted. Your original file is never modified. The operation is atomic: it either succeeds completely or nothing is written.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Is OpenRemap really free?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. OpenRemap is MIT-licensed and open-source. No hidden tiers, no feature gates, no subscription. The source code is on GitHub — read every line if you want to.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Which ECUs does OpenRemap support?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Currently there are 30 extractor families covering Bosch, Siemens, Delphi, and Marelli — including EDC17, EDC16, ME7, SIMOS, PPD, and many more. Coverage is expanding with every release.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Can I use OpenRemap commercially in my workshop?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "Yes. The MIT license allows unrestricted commercial use. You can use OpenRemap in your workshop, integrate it into your workflow, and charge customers for tuning work you do with it. No restrictions, no royalties.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Does OpenRemap collect any data or phone home?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. Zero telemetry, zero analytics, zero network calls. Everything runs locally on your machine. Your binaries and recipes never leave your computer.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "What is a .remap recipe file?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "A small JSON file that records only the bytes you changed — not the full firmware. It contains your calibration work (the diff), cleanly separated from the manufacturer's intellectual property. You can share it without distributing copyrighted OEM firmware.",
+                },
+              },
+              {
+                "@type": "Question",
+                name: "Do I need to know Python or the command line to use OpenRemap?",
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: "No. Type 'openremap' and a full graphical interface launches right in your terminal — no commands to memorise. After v1.0, a standalone .exe is planned so you won't even need Python installed.",
+                },
+              },
+            ],
+          }),
+        }}
+      />
       {/* ───────────────────────── Hero ───────────────────────── */}
       <section className="relative overflow-hidden">
-        <div className="mx-auto max-w-4xl px-6 pb-24 pt-32 text-center sm:pt-40">
+        {/* Decorative background glow */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] rounded-full bg-emerald-500/5 blur-3xl" />
+          <div className="absolute right-0 top-1/4 h-[400px] w-[400px] rounded-full bg-emerald-500/3 blur-3xl" />
+        </div>
+
+        <div className="relative mx-auto max-w-4xl px-6 pb-24 pt-32 text-center sm:pt-40 animate-fade-in-up">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
             Open-Source{" "}
             <span className="bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
@@ -125,6 +236,51 @@ export default function HomePage() {
             Identify, diff, and patch ECU binaries. Free. Offline. No data
             leaves your machine.
           </p>
+
+          <p className="mx-auto mt-3 max-w-xl text-sm text-neutral-500">
+            Built for independent tuners, workshops, and anyone tired of
+            managing raw .bin files.
+          </p>
+
+          <Suspense fallback={<VersionBadgeSkeleton />}>
+            <VersionBadge />
+          </Suspense>
+
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <a
+              href="https://pypi.org/project/openremap/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="https://img.shields.io/pypi/v/openremap?color=10b981&label=PyPI&style=flat-square"
+                alt="PyPI version"
+                className="h-5"
+              />
+            </a>
+            <a
+              href="https://pypi.org/project/openremap/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="https://img.shields.io/pypi/dm/openremap?color=10b981&label=Downloads&style=flat-square"
+                alt="PyPI downloads"
+                className="h-5"
+              />
+            </a>
+            <a
+              href="https://github.com/Pinelo92/openremap"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src="https://img.shields.io/github/license/Pinelo92/openremap?color=10b981&style=flat-square"
+                alt="License"
+                className="h-5"
+              />
+            </a>
+          </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <a
@@ -161,130 +317,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Features ───────────────────────── */}
-      <section
-        id="features"
-        className="border-t border-neutral-800/60 bg-neutral-950 py-24"
-      >
-        <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            Everything you need
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center text-neutral-400">
-            Four commands. Zero cloud dependencies. Works on any machine with
-            Python&nbsp;3.10+.
-          </p>
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2">
-            {features.map((f) => (
-              <div
-                key={f.title}
-                className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6"
-              >
-                <span className="text-emerald-400">{f.icon}</span>
-                <h3 className="mt-3 text-lg font-semibold">{f.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-400">
-                  {f.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────── How It Works ───────────────────────── */}
-      <section className="border-t border-neutral-800/60 bg-neutral-900/30 py-24">
-        <div className="mx-auto max-w-3xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            How It Works
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-neutral-400">
-            A simple four-step pipeline from raw binary to patched output.
-          </p>
-
-          <div className="relative mt-16 space-y-12 pl-12">
-            {/* Vertical connector line */}
-            <div className="absolute bottom-4 left-[15px] top-4 w-px bg-neutral-800" />
-
-            {pipelineSteps.map((s) => (
-              <div key={s.step} className="relative">
-                {/* Step circle */}
-                <div className="absolute -left-12 flex h-8 w-8 items-center justify-center rounded-full border border-emerald-500/30 bg-emerald-500/10 text-sm font-bold text-emerald-400">
-                  {s.step}
-                </div>
-                <h3 className="text-lg font-semibold">{s.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-neutral-400">
-                  {s.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ───────────────────────── Coverage ───────────────────────── */}
-      <section className="border-t border-neutral-800/60 bg-neutral-950 py-24">
-        <div className="mx-auto max-w-3xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            Broad ECU Coverage
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-neutral-400">
-            30 extractors across 4 manufacturers, from 1982 to present.
-          </p>
-
-          <div className="mt-12 overflow-hidden rounded-xl border border-neutral-800">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-neutral-800 bg-neutral-900/60">
-                  <th className="px-5 py-3 font-semibold text-neutral-300">
-                    Manufacturer
-                  </th>
-                  <th className="px-5 py-3 text-center font-semibold text-neutral-300">
-                    Families
-                  </th>
-                  <th className="px-5 py-3 font-semibold text-neutral-300">
-                    Examples
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {coverageData.map((row) => (
-                  <tr
-                    key={row.manufacturer}
-                    className="border-b border-neutral-800/60"
-                  >
-                    <td className="px-5 py-3 font-medium">
-                      {row.manufacturer}
-                    </td>
-                    <td className="px-5 py-3 text-center text-emerald-400">
-                      {row.families}
-                    </td>
-                    <td className="px-5 py-3 text-neutral-400">
-                      {row.examples}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              <tfoot>
-                <tr className="bg-neutral-900/40">
-                  <td className="px-5 py-3 font-semibold">Total</td>
-                  <td className="px-5 py-3 text-center font-semibold text-emerald-400">
-                    30
-                  </td>
-                  <td className="px-5 py-3" />
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-      </section>
+      {/* ───────────────────────── Tabbed Content ───────────────────────── */}
+      <LandingTabs />
 
       {/* ───────────────────────── Install ───────────────────────── */}
       <section
         id="install"
         className="border-t border-neutral-800/60 bg-neutral-900/30 py-24"
       >
-        <div className="mx-auto max-w-3xl px-6">
+        <div className="mx-auto max-w-3xl px-6 animate-fade-in-up">
           <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
             Install in seconds
           </h2>
@@ -329,7 +370,7 @@ export default function HomePage() {
           <p className="mt-8 text-center text-sm text-neutral-500">
             See the{" "}
             <a
-              href="/docs/about"
+              href="/docs/install/windows"
               className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300"
             >
               platform-specific installation guides
@@ -339,51 +380,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ───────────────────────── Confidence ───────────────────────── */}
-      <section className="border-t border-neutral-800/60 bg-neutral-950 py-24">
-        <div className="mx-auto max-w-3xl px-6">
-          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            Built-in Confidence Scoring
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-neutral-400">
-            Every identification returns a confidence level so you always know
-            how much to trust the result.
-          </p>
-
-          <div className="mt-12 space-y-4">
-            {confidenceLevels.map((c) => (
-              <div
-                key={c.level}
-                className={`flex flex-col gap-2 rounded-lg border px-5 py-4 sm:flex-row sm:items-center sm:gap-4 ${c.bg}`}
-              >
-                <span
-                  className={`text-sm font-bold tracking-wider ${c.color} w-28 shrink-0`}
-                >
-                  {c.level}
-                </span>
-                <span className="text-sm text-neutral-400">
-                  {c.description}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 text-center text-sm text-neutral-500">
-            Learn more in the{" "}
-            <a
-              href="/docs/about"
-              className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300"
-            >
-              full documentation
-            </a>
-            .
-          </p>
-        </div>
-      </section>
+      {/* ───────────────────────── What's New ───────────────────────── */}
+      <Suspense fallback={<WhatsNewSkeleton />}>
+        <WhatsNew />
+      </Suspense>
 
       {/* ───────────────────────── CTA ───────────────────────── */}
-      <section className="border-t border-neutral-800/60 bg-neutral-900/30 py-24">
-        <div className="mx-auto max-w-2xl px-6 text-center">
+      <section className="border-t border-neutral-800/60 bg-neutral-950 py-24">
+        <div className="mx-auto max-w-2xl px-6 text-center animate-fade-in-up">
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
             Ready to try it?
           </h2>
@@ -418,6 +422,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

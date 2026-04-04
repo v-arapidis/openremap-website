@@ -239,7 +239,7 @@ export async function fetchDoc(slug: string[]): Promise<ParsedDoc | null> {
       .use(remarkHtml, { sanitize: false })
       .process(content);
 
-    const contentHtml = processed.toString();
+    const contentHtml = fixRelativeDocLinks(processed.toString(), entry);
 
     const title =
       frontmatter.title || extractFirstHeading(content) || entry.title;
@@ -254,6 +254,87 @@ export async function fetchDoc(slug: string[]): Promise<ParsedDoc | null> {
     console.error(`Error fetching doc at ${url}:`, error);
     return null;
   }
+}
+
+/**
+ * Rewrite relative `.md` links (meant for GitHub browsing) into absolute
+ * `/docs/…` routes that work on the website.
+ *
+ * Examples (for a doc whose githubPath is "docs/setup.md"):
+ *   install/windows.md        → /docs/install/windows
+ *   ../README.md              → /docs (fallback)
+ *   ../CONTRIBUTING.md        → /docs/contributing
+ *   #shell-completion         → unchanged (anchor)
+ *   https://example.com       → unchanged (external)
+ */
+function fixRelativeDocLinks(html: string, currentEntry: DocEntry): string {
+  // Resolve the "directory" of the current doc's GitHub path.
+  // e.g. "docs/setup.md" → "docs", "docs/commands/workflow.md" → "docs/commands"
+  const parts = currentEntry.githubPath.split("/");
+  parts.pop(); // drop filename
+  const currentDir = parts.join("/"); // e.g. "docs" or "docs/commands"
+
+  return html.replace(
+    /(<a\s[^>]*href=")([^"]+)("[^>]*>)/gi,
+    (_match, before: string, href: string, after: string) => {
+      // Skip external URLs, anchors, mailto, absolute paths
+      if (
+        href.startsWith("http://") ||
+        href.startsWith("https://") ||
+        href.startsWith("mailto:") ||
+        href.startsWith("#") ||
+        href.startsWith("/")
+      ) {
+        return `${before}${href}${after}`;
+      }
+
+      // Only process links ending in .md (with optional anchor)
+      const mdMatch = href.match(/^(.+\.md)(#.*)?$/);
+      if (!mdMatch) {
+        return `${before}${href}${after}`;
+      }
+
+      const relativePath = mdMatch[1]; // e.g. "install/windows.md" or "../README.md"
+      const anchor = mdMatch[2] ?? ""; // e.g. "#shell-completion" or ""
+
+      // Resolve relative path against the current doc's directory
+      const segments = currentDir ? currentDir.split("/") : [];
+      for (const part of relativePath.split("/")) {
+        if (part === "..") {
+          segments.pop();
+        } else if (part !== ".") {
+          segments.push(part);
+        }
+      }
+
+      // Strip the .md extension from the last segment
+      const last = segments.pop();
+      if (last) {
+        segments.push(last.replace(/\.md$/i, ""));
+      }
+
+      const resolved = segments.join("/"); // e.g. "docs/install/windows" or "README"
+
+      // Try to find a matching manifest entry by githubPath
+      const target = DOC_MANIFEST.find((e) => {
+        const ePath = e.githubPath.replace(/\.md$/i, "");
+        return ePath === resolved;
+      });
+
+      if (target) {
+        return `${before}/docs/${target.slug.join("/")}${anchor}${after}`;
+      }
+
+      // Fallback: if the resolved path starts with "docs/", strip that prefix
+      // and use it as the slug directly
+      if (resolved.startsWith("docs/")) {
+        return `${before}/docs/${resolved.slice(5)}${anchor}${after}`;
+      }
+
+      // Last resort: link to /docs
+      return `${before}/docs${anchor}${after}`;
+    },
+  );
 }
 
 function extractFirstHeading(markdown: string): string | null {

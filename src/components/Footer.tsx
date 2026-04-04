@@ -71,7 +71,7 @@ export default function Footer() {
 
         <div className="border-t border-neutral-800 mt-10 pt-6 text-center">
           <p className="text-sm text-neutral-500">
-            &copy; 2025 OpenRemap Contributors
+            &copy; 2025–2026 OpenRemap Contributors
           </p>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Hexagon, Menu, X } from "lucide-react";
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -27,9 +28,9 @@ export default function Header() {
         {/* Logo */}
         <Link
           href="/"
-          className="text-lg font-bold text-white transition-colors hover:opacity-90"
+          className="flex items-center gap-1.5 text-lg font-bold text-white transition-colors hover:opacity-90"
         >
-          <span className="text-emerald-500">⬡</span> OpenRemap
+          <Hexagon className="h-5 w-5 text-emerald-500" /> OpenRemap
         </Link>
 
         {/* Desktop nav */}
@@ -60,13 +61,17 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="inline-flex items-center justify-center rounded-md p-2 text-xl text-neutral-400 transition-colors hover:text-white md:hidden"
+          className="inline-flex items-center justify-center rounded-md p-2 text-neutral-400 transition-colors hover:text-white md:hidden"
           aria-expanded={mobileMenuOpen}
           aria-label={
             mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"
           }
         >
-          {mobileMenuOpen ? "✕" : "☰"}
+          {mobileMenuOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </nav>
 
