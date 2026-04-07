@@ -180,7 +180,7 @@ export default function DocsIndexPage() {
         <p className="text-sm text-neutral-500">
           Can&apos;t find what you&apos;re looking for?{" "}
           <a
-            href="https://github.com/Pinelo92/openremap/issues"
+            href="https://github.com/Openremap/openremap-core/issues"
             target="_blank"
             rel="noopener noreferrer"
             className="font-medium text-emerald-400 transition-colors hover:text-emerald-300"

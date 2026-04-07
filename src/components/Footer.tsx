@@ -22,7 +22,7 @@ export default function Footer() {
             <ul className="mt-2 space-y-2">
               <li>
                 <a
-                  href="https://github.com/Pinelo92/openremap"
+                  href="https://github.com/Openremap/openremap-core"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-neutral-400 hover:text-emerald-400 transition-colors"
@@ -58,7 +58,7 @@ export default function Footer() {
             <p className="mt-2 text-sm text-neutral-400">
               Released under the{" "}
               <a
-                href="https://github.com/Pinelo92/openremap/blob/main/LICENSE"
+                href="https://github.com/Openremap/openremap-core/blob/main/LICENSE"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-neutral-400 hover:text-emerald-400 transition-colors"

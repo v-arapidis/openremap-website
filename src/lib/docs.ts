@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
 
 const GITHUB_RAW_BASE =
-  "https://raw.githubusercontent.com/Pinelo92/openremap/main";
+  "https://raw.githubusercontent.com/Openremap/openremap-core/main";
 
 export interface DocEntry {
   slug: string[];

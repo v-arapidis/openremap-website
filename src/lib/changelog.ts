@@ -1,5 +1,5 @@
 const GITHUB_RAW_BASE =
-  "https://raw.githubusercontent.com/Pinelo92/openremap/main";
+  "https://raw.githubusercontent.com/Openremap/openremap-core/main";
 
 const CHANGELOG_PATH = "CHANGELOG.md";
 
