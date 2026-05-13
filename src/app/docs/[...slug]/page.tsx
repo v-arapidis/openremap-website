@@ -141,7 +141,7 @@ export default async function DocsSlugPage({ params }: DocsPageProps) {
               </a>
 
               <a
-                href={`https://github.com/Openremap/openremap-core/edit/main/${
+                href={`https://github.com/v-arapidis/openremap-core/edit/main/${
                   DOC_MANIFEST.find((e) => e.slug.join("/") === slug.join("/"))
                     ?.githubPath ?? ""
                 }`}

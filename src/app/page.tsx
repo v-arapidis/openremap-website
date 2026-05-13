@@ -270,12 +270,12 @@ export default function HomePage() {
               />
             </a>
             <a
-              href="https://github.com/Openremap/openremap-core"
+              href="https://github.com/v-arapidis/openremap-core"
               target="_blank"
               rel="noopener noreferrer"
             >
               <img
-                src="https://img.shields.io/github/license/Openremap/openremap-core?color=10b981&style=flat-square"
+                src="https://img.shields.io/github/license/v-arapidis/openremap-core?color=10b981&style=flat-square"
                 alt="License"
                 className="h-5"
               />
@@ -290,7 +290,7 @@ export default function HomePage() {
               Get Started
             </a>
             <a
-              href="https://github.com/Openremap/openremap-core"
+              href="https://github.com/v-arapidis/openremap-core"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-neutral-700 px-6 py-3 text-sm font-semibold text-neutral-300 transition hover:border-neutral-500 hover:text-white"
@@ -412,7 +412,7 @@ export default function HomePage() {
               Read the Docs
             </a>
             <a
-              href="https://github.com/Openremap/openremap-core"
+              href="https://github.com/v-arapidis/openremap-core"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-neutral-700 px-6 py-3 text-sm font-semibold text-neutral-300 transition hover:border-neutral-500 hover:text-white"

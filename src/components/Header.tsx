@@ -48,7 +48,7 @@ export default function Header() {
             Docs
           </Link>
           <a
-            href="https://github.com/Openremap/openremap-core"
+            href="https://github.com/v-arapidis/openremap-core"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm font-medium text-neutral-400 transition-colors hover:text-white"
@@ -98,7 +98,7 @@ export default function Header() {
           Docs
         </Link>
         <a
-          href="https://github.com/Openremap/openremap-core"
+          href="https://github.com/v-arapidis/openremap-core"
           target="_blank"
           rel="noopener noreferrer"
           onClick={closeMobileMenu}

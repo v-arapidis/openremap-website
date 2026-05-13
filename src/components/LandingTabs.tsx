@@ -1049,7 +1049,7 @@ export default function LandingTabs() {
                 <p className="text-sm text-neutral-400">
                   Got a feature you need?{" "}
                   <a
-                    href="https://github.com/Openremap/openremap-core/issues"
+                    href="https://github.com/v-arapidis/openremap-core/issues"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300"
@@ -1090,7 +1090,7 @@ export default function LandingTabs() {
                 <p className="text-sm text-neutral-400">
                   Still have questions?{" "}
                   <a
-                    href="https://github.com/Openremap/openremap-core/discussions"
+                    href="https://github.com/v-arapidis/openremap-core/discussions"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300"
