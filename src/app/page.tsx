@@ -49,6 +49,16 @@ function VersionBadgeSkeleton() {
   );
 }
 
+const SECTION_KEYWORDS = [
+  "Added",
+  "Changed",
+  "Deprecated",
+  "Fixed",
+  "Removed",
+  "Security",
+  "Tests",
+];
+
 async function WhatsNew() {
   const release = await fetchLatestRelease();
   if (!release || release.entries.length === 0) return null;
@@ -74,9 +84,11 @@ async function WhatsNew() {
                 >
                   {entry.label}
                 </span>
-                <span className="text-sm font-semibold text-white">
-                  {entry.title}
-                </span>
+                {!SECTION_KEYWORDS.includes(entry.title) && (
+                  <span className="text-sm font-semibold text-white">
+                    {entry.title}
+                  </span>
+                )}
               </div>
               <p className="text-sm text-neutral-400">{entry.description}</p>
             </div>
@@ -255,17 +267,6 @@ export default function HomePage() {
               <img
                 src="https://img.shields.io/pypi/v/openremap?color=10b981&label=PyPI&style=flat-square"
                 alt="PyPI version"
-                className="h-5"
-              />
-            </a>
-            <a
-              href="https://pypi.org/project/openremap/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="https://img.shields.io/pypi/dm/openremap?color=10b981&label=Downloads&style=flat-square"
-                alt="PyPI downloads"
                 className="h-5"
               />
             </a>

@@ -1,7 +1,8 @@
 const GITHUB_RAW_BASE =
+  process.env.OPENREMAP_RAW_BASE ??
   "https://raw.githubusercontent.com/v-arapidis/openremap-core/main";
 
-const CHANGELOG_PATH = "CHANGELOG.md";
+const CHANGELOG_PATH = "changelog/0.6.5.md";
 
 export interface ChangelogEntry {
   label: string;
@@ -19,7 +20,7 @@ export interface LatestRelease {
 /**
  * Map a changelog `### Heading` to a display label and colour hint.
  *
- * The heading format in CHANGELOG.md is:
+ * The heading format in the per-version changelog (changelog/<v>.md) is:
  *   ### Fixed — EDC16 Extractor
  *   ### Added — Evidence-Based Detection
  *   ### Changed — Confidence Scoring
@@ -94,34 +95,46 @@ function summariseBullets(lines: string[]): string {
 }
 
 /**
- * Parse the raw CHANGELOG.md text and return the latest release block.
+ * Parse a per-version changelog file (changelog/<version>.md) and return
+ * the latest release block.
+ *
+ * The format is:
+ *   # 0.6.5 — unreleased
+ *
+ *   Prose summary paragraph.
+ *
+ *   ### Added
+ *   - Bullet points
+ *
+ *   ### Changed
+ *   - More bullets
  */
 function parseLatestRelease(markdown: string): LatestRelease | null {
   const lines = markdown.split("\n");
 
-  // Find the first `## [x.y.z] — YYYY-MM-DD` heading
+  // Find the first `# x.y.z` heading (H1 only)
   let versionLineIndex = -1;
   let version = "";
   let date = "";
 
   for (let i = 0; i < lines.length; i++) {
     const match = lines[i].match(
-      /^##\s+\[(\d+\.\d+\.\d+[^\]]*)\]\s*[—–-]\s*(\d{4}-\d{2}-\d{2})/,
+      /^#\s+(\d+\.\d+(?:\.\d+)*[^\s]*)\s*(?:[—–-]\s*(.+))?$/,
     );
     if (match) {
       versionLineIndex = i;
       version = match[1];
-      date = match[2];
+      date = match[2]?.trim() ?? "";
       break;
     }
   }
 
   if (versionLineIndex === -1) return null;
 
-  // Find where the next `## [` starts (end of this release block)
+  // Find where the next `#` heading starts (end of this release block)
   let endIndex = lines.length;
   for (let i = versionLineIndex + 1; i < lines.length; i++) {
-    if (lines[i].match(/^##\s+\[/)) {
+    if (lines[i].match(/^#{1,2}\s/)) {
       endIndex = i;
       break;
     }
@@ -139,7 +152,7 @@ function parseLatestRelease(markdown: string): LatestRelease | null {
     }
     const trimmed = releaseLines[i].trim();
     if (trimmed && !trimmed.startsWith("---")) {
-      summaryLines.push(trimmed);
+      summaryLines.push(trimmed.replace(/`([^`]*)`/g, "$1"));
     }
     bodyStart = i + 1;
   }
@@ -176,7 +189,8 @@ function parseLatestRelease(markdown: string): LatestRelease | null {
 }
 
 /**
- * Fetch the CHANGELOG.md from GitHub and parse the latest release.
+ * Fetch the latest per-version changelog (changelog/<version>.md) from
+ * GitHub and parse it.
  *
  * Called at build time (SSG/ISR) — the result is baked into static HTML.
  * Revalidates every hour so rebuilds or ISR pick up new releases.

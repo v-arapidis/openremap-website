@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { getAllDocSlugs } from "@/lib/docs";
+import { getDocsManifest } from "@/lib/docs";
 
 const BASE_URL = "https://openremap.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   // Static pages
@@ -22,9 +22,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  // Doc pages from manifest
-  const docPages: MetadataRoute.Sitemap = getAllDocSlugs().map((slug) => ({
-    url: `${BASE_URL}/docs/${slug.join("/")}`,
+  // Doc pages from manifest (includes discovered changelog versions)
+  const entries = await getDocsManifest();
+  const docPages: MetadataRoute.Sitemap = entries.map((entry) => ({
+    url: `${BASE_URL}/docs/${entry.slug.join("/")}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,

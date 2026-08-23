@@ -747,7 +747,7 @@ export default function LandingTabs() {
               <p className="mt-10 text-center text-sm text-neutral-500">
                 Read the full{" "}
                 <a
-                  href="/docs/recipe-format"
+                  href="/docs/concepts/recipe-format"
                   className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300"
                 >
                   recipe format specification
@@ -966,7 +966,7 @@ export default function LandingTabs() {
               <p className="mt-8 text-center text-sm text-neutral-500">
                 Learn more in the{" "}
                 <a
-                  href="/docs/about"
+                  href="/docs/getting-started/about"
                   className="text-emerald-400 underline underline-offset-2 hover:text-emerald-300"
                 >
                   full documentation

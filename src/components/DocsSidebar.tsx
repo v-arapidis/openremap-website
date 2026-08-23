@@ -4,11 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search } from "lucide-react";
-import { DOC_CATEGORIES, DOC_MANIFEST, type DocEntry } from "@/lib/docs";
+import { DOC_CATEGORIES, type DocEntry } from "@/lib/docs";
 
-function getDocsByCategory(): Record<string, DocEntry[]> {
+interface DocsSidebarProps {
+  entries: DocEntry[];
+}
+
+function getDocsByCategory(entries: DocEntry[]): Record<string, DocEntry[]> {
   const grouped: Record<string, DocEntry[]> = {};
-  for (const entry of DOC_MANIFEST) {
+  for (const entry of entries) {
     if (!grouped[entry.category]) {
       grouped[entry.category] = [];
     }
@@ -62,12 +66,18 @@ function CategorySection({
           {entries.map((entry) => {
             const href = slugToHref(entry.slug);
             const isActive = pathname === href;
+            const isChild =
+              entry.slug.length >= 3 ||
+              (entry.category === "Contributing & Legal" &&
+                entry.slug.length >= 2);
 
             return (
               <li key={href}>
                 <Link
                   href={href}
                   className={`block rounded-md px-3 py-1.5 text-sm transition-colors ${
+                    isChild ? "ml-3 border-l border-neutral-800 pl-3 text-xs" : ""
+                  } ${
                     isActive
                       ? "bg-emerald-500/10 font-medium text-emerald-400"
                       : "text-neutral-400 hover:bg-neutral-800/40 hover:text-neutral-200"
@@ -84,13 +94,13 @@ function CategorySection({
   );
 }
 
-export default function DocsSidebar() {
+export default function DocsSidebar({ entries }: DocsSidebarProps) {
   const pathname = usePathname();
-  const grouped = getDocsByCategory();
+  const grouped = getDocsByCategory(entries);
   const [searchQuery, setSearchQuery] = useState("");
 
   // Determine which category contains the current page so we can auto-expand it
-  const activeCategory = DOC_MANIFEST.find(
+  const activeCategory = entries.find(
     (entry) => pathname === slugToHref(entry.slug),
   )?.category;
 
@@ -131,7 +141,8 @@ export default function DocsSidebar() {
           ? entries.filter(
               (e) =>
                 e.title.toLowerCase().includes(query) ||
-                category.toLowerCase().includes(query),
+                category.toLowerCase().includes(query) ||
+                e.slug.join("/").toLowerCase().includes(query),
             )
           : entries;
         if (filtered.length === 0) return null;

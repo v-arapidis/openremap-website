@@ -4,6 +4,7 @@ import remarkGfm from "remark-gfm";
 import remarkHtml from "remark-html";
 
 const GITHUB_RAW_BASE =
+  process.env.OPENREMAP_RAW_BASE ??
   "https://raw.githubusercontent.com/v-arapidis/openremap-core/main";
 
 export interface DocEntry {
@@ -13,189 +14,201 @@ export interface DocEntry {
   category: string;
 }
 
-export const DOC_MANIFEST: DocEntry[] = [
-  // Getting Started
-  {
-    slug: ["about"],
-    githubPath: "docs/about.md",
-    title: "About OpenRemap",
-    category: "Getting Started",
-  },
-  {
-    slug: ["quickstart"],
-    githubPath: "docs/quickstart.md",
-    title: "Quick Start",
-    category: "Getting Started",
-  },
-  {
-    slug: ["setup"],
-    githubPath: "docs/setup.md",
-    title: "Setup",
-    category: "Getting Started",
-  },
-  {
-    slug: ["cli"],
-    githubPath: "docs/cli.md",
-    title: "CLI Reference",
-    category: "Getting Started",
-  },
+export const DOC_MANIFEST: DocEntry[] = buildManifest();
 
-  // Guides
-  {
-    slug: ["tui"],
-    githubPath: "docs/tui.md",
-    title: "Interactive TUI",
-    category: "Guides",
-  },
-  {
-    slug: ["commands", "workflow"],
-    githubPath: "docs/commands/workflow.md",
-    title: "Workflow Guide",
-    category: "Guides",
-  },
+/**
+ * `index.md` pages get the folder path as their slug (no "index" segment):
+ *   docs/commands/identify/index.md → /docs/commands/identify
+ * Child pages keep their filename:
+ *   docs/commands/identify/advanced.md → /docs/commands/identify/advanced
+ */
+function buildManifest(): DocEntry[] {
+  const entries: DocEntry[] = [];
 
-  // Installation
-  {
-    slug: ["install", "windows"],
-    githubPath: "docs/install/windows.md",
-    title: "Windows Installation",
-    category: "Installation",
-  },
-  {
-    slug: ["install", "macos-linux"],
-    githubPath: "docs/install/macos-linux.md",
-    title: "macOS & Linux",
-    category: "Installation",
-  },
-  {
-    slug: ["install", "developers"],
-    githubPath: "docs/install/developers.md",
-    title: "Developer Setup",
-    category: "Installation",
-  },
+  const add = (
+    slug: string[],
+    githubPath: string,
+    title: string,
+    category: string,
+  ) => {
+    entries.push({ slug, githubPath, title, category });
+  };
 
-  // Commands
-  {
-    slug: ["commands", "overview"],
-    githubPath: "docs/commands/commands.md",
-    title: "Commands Overview",
-    category: "Commands",
-  },
-  {
-    slug: ["commands", "identify"],
-    githubPath: "docs/commands/identify.md",
-    title: "identify",
-    category: "Commands",
-  },
-  {
-    slug: ["commands", "scan"],
-    githubPath: "docs/commands/scan.md",
-    title: "scan",
-    category: "Commands",
-  },
-  {
-    slug: ["commands", "cook"],
-    githubPath: "docs/commands/cook.md",
-    title: "cook",
-    category: "Commands",
-  },
-  {
-    slug: ["commands", "tune"],
-    githubPath: "docs/commands/tune.md",
-    title: "tune",
-    category: "Commands",
-  },
-  {
-    slug: ["commands", "validate"],
-    githubPath: "docs/commands/validate.md",
-    title: "validate",
-    category: "Commands",
-  },
-  {
-    slug: ["commands", "families"],
-    githubPath: "docs/commands/families.md",
-    title: "families",
-    category: "Commands",
-  },
+  // ── Getting Started ────────────────────────────────────────────────
+  const gettingStarted = "Getting Started";
+  add(["getting-started"], "docs/getting-started/index.md", "Getting Started", gettingStarted);
+  add(["getting-started", "about"], "docs/getting-started/about.md", "About OpenRemap", gettingStarted);
+  add(["getting-started", "quickstart"], "docs/getting-started/quickstart.md", "Quick Start", gettingStarted);
+  add(["getting-started", "setup"], "docs/getting-started/setup.md", "Setup", gettingStarted);
+  add(["getting-started", "cli"], "docs/getting-started/cli.md", "CLI Reference", gettingStarted);
+  add(["getting-started", "tui"], "docs/getting-started/tui.md", "Interactive TUI", gettingStarted);
 
-  // Concepts
-  {
-    slug: ["confidence"],
-    githubPath: "docs/confidence.md",
-    title: "Confidence Scoring",
-    category: "Concepts",
-  },
-  {
-    slug: ["recipe-format"],
-    githubPath: "docs/recipe-format.md",
-    title: "Recipe Format",
-    category: "Concepts",
-  },
-  {
-    slug: ["architecture"],
-    githubPath: "docs/architecture.md",
-    title: "Architecture Overview",
-    category: "Concepts",
-  },
+  // ── Installation ───────────────────────────────────────────────────
+  const installation = "Installation";
+  add(["install"], "docs/getting-started/install/index.md", "Installation", installation);
+  add(["install", "windows"], "docs/getting-started/install/windows.md", "Windows", installation);
+  add(["install", "macos-linux"], "docs/getting-started/install/macos-linux.md", "macOS & Linux", installation);
+  add(["install", "developers"], "docs/getting-started/install/developers.md", "Developer Setup", installation);
 
-  // Manufacturers
-  {
-    slug: ["manufacturers", "bosch"],
-    githubPath: "docs/manufacturers/bosch.md",
-    title: "Bosch",
-    category: "Manufacturers",
-  },
-  {
-    slug: ["manufacturers", "bosch-internals"],
-    githubPath: "docs/manufacturers/bosch-internals.md",
-    title: "Bosch Internals",
-    category: "Manufacturers",
-  },
-  {
-    slug: ["manufacturers", "siemens"],
-    githubPath: "docs/manufacturers/siemens.md",
-    title: "Siemens",
-    category: "Manufacturers",
-  },
-  {
-    slug: ["manufacturers", "siemens-internals"],
-    githubPath: "docs/manufacturers/siemens-internals.md",
-    title: "Siemens Internals",
-    category: "Manufacturers",
-  },
-  {
-    slug: ["manufacturers", "delphi"],
-    githubPath: "docs/manufacturers/delphi.md",
-    title: "Delphi",
-    category: "Manufacturers",
-  },
-  {
-    slug: ["manufacturers", "marelli"],
-    githubPath: "docs/manufacturers/marelli.md",
-    title: "Marelli",
-    category: "Manufacturers",
-  },
+  // ── Guides ─────────────────────────────────────────────────────────
+  add(["guides", "workflow"], "docs/commands/workflow.md", "Workflow Guide", "Guides");
 
-  // Contributing & Legal
-  {
-    slug: ["contributing"],
-    githubPath: "CONTRIBUTING.md",
-    title: "Contributing",
-    category: "Contributing & Legal",
-  },
-  {
-    slug: ["disclaimer"],
-    githubPath: "DISCLAIMER.md",
-    title: "Disclaimer",
-    category: "Contributing & Legal",
-  },
-  {
-    slug: ["changelog"],
-    githubPath: "CHANGELOG.md",
-    title: "Changelog",
-    category: "Contributing & Legal",
-  },
-];
+  // ── Commands (two-tier: index + advanced per command) ──────────────
+  const commands = "Commands";
+  add(["commands"], "docs/commands/index.md", "Commands Overview", commands);
+  const COMMAND_NAMES = [
+    "identify",
+    "scan",
+    "scan-vins",
+    "layout",
+    "scan-maps",
+    "diff-maps",
+    "cook",
+    "merge",
+    "tune",
+    "validate",
+    "audit",
+    "checksum",
+    "health",
+    "families",
+  ];
+  for (const name of COMMAND_NAMES) {
+    add(["commands", name], `docs/commands/${name}/index.md`, name, commands);
+    add(
+      ["commands", name, "advanced"],
+      `docs/commands/${name}/advanced.md`,
+      `${name} (advanced)`,
+      commands,
+    );
+  }
+
+  // ── Concepts ───────────────────────────────────────────────────────
+  const concepts = "Concepts";
+  add(["concepts"], "docs/concepts/index.md", "Concepts", concepts);
+  add(["concepts", "how-it-works"], "docs/concepts/how-it-works.md", "How It Works", concepts);
+  add(["concepts", "confidence"], "docs/concepts/confidence.md", "Confidence Scoring", concepts);
+  add(["concepts", "evidence"], "docs/concepts/evidence.md", "Evidence", concepts);
+  add(["concepts", "recipe-format"], "docs/concepts/recipe-format.md", "Recipe Format", concepts);
+  add(["concepts", "architecture"], "docs/concepts/architecture.md", "Architecture Overview", concepts);
+  add(["concepts", "orst-format"], "docs/concepts/orst-format.md", "ORST Format", concepts);
+
+  // ── Manufacturers ──────────────────────────────────────────────────
+  const manufacturers = "Manufacturers";
+  add(["manufacturers"], "docs/manufacturers/index.md", "Supported Manufacturers", manufacturers);
+
+  const BOSCH_FAMILIES: [string, string][] = [
+    ["edc1", "EDC1 / EDC2"],
+    ["edc15", "EDC15"],
+    ["edc16", "EDC16"],
+    ["edc17", "EDC17 / MEDC17"],
+    ["edc3x", "EDC 3.x"],
+    ["lh", "LH-Jetronic"],
+    ["m1x", "M1.x / M1.55"],
+    ["m2x", "M2.x"],
+    ["m3x", "M3.x / MP3.x / MP7.x"],
+    ["m4x", "M4.x"],
+    ["m5x", "M5.x / M3.8x"],
+    ["me155", "ME1.5.5"],
+    ["me7", "ME7"],
+    ["me9", "ME9"],
+    ["med9", "MED9"],
+    ["mono", "Mono-Motronic"],
+    ["motronic-legacy", "Motronic Legacy"],
+    ["mp9", "MP9"],
+  ];
+  add(["manufacturers", "bosch"], "docs/manufacturers/bosch/index.md", "Bosch", manufacturers);
+  add(["manufacturers", "bosch", "internals"], "docs/manufacturers/bosch/internals.md", "Bosch Internals", manufacturers);
+  for (const [slug, title] of BOSCH_FAMILIES) {
+    add(["manufacturers", "bosch", slug], `docs/manufacturers/bosch/${slug}.md`, title, manufacturers);
+  }
+
+  const SIEMENS_FAMILIES: [string, string][] = [
+    ["ems2000", "EMS2000"],
+    ["ms43", "MS43"],
+    ["ppd", "PPD1.x"],
+    ["sid801", "SID 801 / 801A"],
+    ["sid803", "SID 803 / 803A"],
+    ["simos", "SIMOS"],
+    ["simtec56", "Simtec 56"],
+  ];
+  add(["manufacturers", "siemens"], "docs/manufacturers/siemens/index.md", "Siemens", manufacturers);
+  add(["manufacturers", "siemens", "internals"], "docs/manufacturers/siemens/internals.md", "Siemens Internals", manufacturers);
+  for (const [slug, title] of SIEMENS_FAMILIES) {
+    add(["manufacturers", "siemens", slug], `docs/manufacturers/siemens/${slug}.md`, title, manufacturers);
+  }
+
+  add(["manufacturers", "delphi"], "docs/manufacturers/delphi/index.md", "Delphi", manufacturers);
+  add(["manufacturers", "delphi", "multec"], "docs/manufacturers/delphi/multec.md", "Multec", manufacturers);
+  add(["manufacturers", "delphi", "multec_s"], "docs/manufacturers/delphi/multec_s.md", "Multec S", manufacturers);
+
+  add(["manufacturers", "marelli"], "docs/manufacturers/marelli/index.md", "Magneti Marelli", manufacturers);
+  add(["manufacturers", "marelli", "iaw_1ap"], "docs/manufacturers/marelli/iaw_1ap.md", "IAW 1AP", manufacturers);
+  add(["manufacturers", "marelli", "iaw_1av"], "docs/manufacturers/marelli/iaw_1av.md", "IAW 1AV", manufacturers);
+  add(["manufacturers", "marelli", "iaw_4lv"], "docs/manufacturers/marelli/iaw_4lv.md", "IAW 4LV", manufacturers);
+  add(["manufacturers", "marelli", "mjd6jf"], "docs/manufacturers/marelli/mjd6jf.md", "MJD 6JF", manufacturers);
+
+  add(["manufacturers", "denso"], "docs/manufacturers/denso/index.md", "Denso", manufacturers);
+  add(["manufacturers", "denso", "diesel"], "docs/manufacturers/denso/diesel.md", "EE20 Diesel", manufacturers);
+  add(["manufacturers", "denso", "sh7055"], "docs/manufacturers/denso/sh7055.md", "SH7055", manufacturers);
+  add(["manufacturers", "denso", "sh7058"], "docs/manufacturers/denso/sh7058.md", "SH7058", manufacturers);
+  add(["manufacturers", "denso", "sh72531"], "docs/manufacturers/denso/sh72531.md", "SH72531", manufacturers);
+
+  add(["manufacturers", "hitachi"], "docs/manufacturers/hitachi/index.md", "Hitachi", manufacturers);
+  add(["manufacturers", "hitachi", "sh72546"], "docs/manufacturers/hitachi/sh72546.md", "SH72546", manufacturers);
+
+  // ── Contributing & Legal ───────────────────────────────────────────
+  const contributing = "Contributing & Legal";
+  add(["contributing"], "CONTRIBUTING.md", "Contributing", contributing);
+  add(["disclaimer"], "DISCLAIMER.md", "Disclaimer", contributing);
+  add(["changelog"], "CHANGELOG.md", "Changelog", contributing);
+
+  return entries;
+}
+
+const CHANGELOG_CATEGORY = "Contributing & Legal";
+
+/**
+ * Discover the per-version changelog pages by parsing the version table in
+ * the repo's own CHANGELOG.md index:
+ *
+ *   | [0.6.5](changelog/0.6.5.md) | unreleased | ...
+ *
+ * New versions appear automatically — no manifest edits needed.
+ */
+let changelogCache: DocEntry[] | null = null;
+
+export async function getChangelogEntries(): Promise<DocEntry[]> {
+  if (changelogCache) return changelogCache;
+  changelogCache = [];
+
+  try {
+    const response = await fetch(`${GITHUB_RAW_BASE}/CHANGELOG.md`, {
+      next: { revalidate: 3600 },
+    });
+    if (!response.ok) return changelogCache;
+
+    const markdown = await response.text();
+    const versionPattern = /^\|\s*\[([0-9][0-9.]*)\]\(changelog\/([^)]+\.md)\)/gm;
+    for (const match of markdown.matchAll(versionPattern)) {
+      const [, version, file] = match;
+      changelogCache.push({
+        slug: ["changelog", version],
+        githubPath: `changelog/${file}`,
+        title: `v${version}`,
+        category: CHANGELOG_CATEGORY,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to discover changelog versions:", error);
+  }
+
+  return changelogCache;
+}
+
+/** The full manifest: stable wiki pages + discovered changelog versions. */
+export async function getDocsManifest(): Promise<DocEntry[]> {
+  return [...DOC_MANIFEST, ...(await getChangelogEntries())];
+}
 
 export interface ParsedDoc {
   title: string;
@@ -208,13 +221,19 @@ function slugToKey(slug: string[]): string {
   return slug.join("/");
 }
 
-function findDocEntry(slug: string[]): DocEntry | undefined {
+function findDocEntry(
+  slug: string[],
+  entries: DocEntry[] = DOC_MANIFEST,
+): DocEntry | undefined {
   const key = slugToKey(slug);
-  return DOC_MANIFEST.find((entry) => slugToKey(entry.slug) === key);
+  return entries.find((entry) => slugToKey(entry.slug) === key);
 }
 
-export async function fetchDoc(slug: string[]): Promise<ParsedDoc | null> {
-  const entry = findDocEntry(slug);
+export async function fetchDoc(
+  slug: string[],
+  entries: DocEntry[] = DOC_MANIFEST,
+): Promise<ParsedDoc | null> {
+  const entry = findDocEntry(slug, entries);
   if (!entry) {
     return null;
   }
@@ -239,7 +258,7 @@ export async function fetchDoc(slug: string[]): Promise<ParsedDoc | null> {
       .use(remarkHtml, { sanitize: false })
       .process(content);
 
-    const contentHtml = fixRelativeDocLinks(processed.toString(), entry);
+    const contentHtml = fixRelativeDocLinks(processed.toString(), entry, entries);
 
     const title =
       frontmatter.title || extractFirstHeading(content) || entry.title;
@@ -267,7 +286,11 @@ export async function fetchDoc(slug: string[]): Promise<ParsedDoc | null> {
  *   #shell-completion         → unchanged (anchor)
  *   https://example.com       → unchanged (external)
  */
-function fixRelativeDocLinks(html: string, currentEntry: DocEntry): string {
+function fixRelativeDocLinks(
+  html: string,
+  currentEntry: DocEntry,
+  entries: DocEntry[] = DOC_MANIFEST,
+): string {
   // Resolve the "directory" of the current doc's GitHub path.
   // e.g. "docs/setup.md" → "docs", "docs/commands/workflow.md" → "docs/commands"
   const parts = currentEntry.githubPath.split("/");
@@ -316,13 +339,18 @@ function fixRelativeDocLinks(html: string, currentEntry: DocEntry): string {
       const resolved = segments.join("/"); // e.g. "docs/install/windows" or "README"
 
       // Try to find a matching manifest entry by githubPath
-      const target = DOC_MANIFEST.find((e) => {
+      const target = entries.find((e) => {
         const ePath = e.githubPath.replace(/\.md$/i, "");
         return ePath === resolved;
       });
 
       if (target) {
         return `${before}/docs/${target.slug.join("/")}${anchor}${after}`;
+      }
+
+      // The wiki home: docs/README.md → /docs
+      if (resolved === "docs/README" || resolved === "README") {
+        return `${before}/docs${anchor}${after}`;
       }
 
       // Fallback: if the resolved path starts with "docs/", strip that prefix
@@ -340,23 +368,6 @@ function fixRelativeDocLinks(html: string, currentEntry: DocEntry): string {
 function extractFirstHeading(markdown: string): string | null {
   const match = markdown.match(/^#\s+(.+)$/m);
   return match ? match[1].trim() : null;
-}
-
-export function getAllDocSlugs(): string[][] {
-  return DOC_MANIFEST.map((entry) => entry.slug);
-}
-
-export function getDocsByCategory(): Record<string, DocEntry[]> {
-  const grouped: Record<string, DocEntry[]> = {};
-
-  for (const entry of DOC_MANIFEST) {
-    if (!grouped[entry.category]) {
-      grouped[entry.category] = [];
-    }
-    grouped[entry.category].push(entry);
-  }
-
-  return grouped;
 }
 
 export const DOC_CATEGORIES = [
