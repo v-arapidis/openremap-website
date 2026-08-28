@@ -1,17 +1,23 @@
 import type { NextConfig } from "next";
 
+const DOCS_SITE = "https://docs.openremap.com";
+
 const nextConfig: NextConfig = {
-  images: {
-    remotePatterns: [
+  async redirects() {
+    return [
+      // Docs moved to their own site (openremap-docs repo) — send old
+      // /docs/* bookmarks and links to the new home, keeping the slug.
       {
-        protocol: "https",
-        hostname: "raw.githubusercontent.com",
+        source: "/docs/:path*",
+        destination: `${DOCS_SITE}/:path*`,
+        permanent: true,
       },
       {
-        protocol: "https",
-        hostname: "*.githubusercontent.com",
+        source: "/docs",
+        destination: DOCS_SITE,
+        permanent: true,
       },
-    ],
+    ];
   },
 };
 

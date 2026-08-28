@@ -93,9 +93,9 @@ export default function OgImage() {
         >
           <span>Identify</span>
           <span style={{ color: "#525252" }}>•</span>
-          <span>Diff</span>
+          <span>Health-check</span>
           <span style={{ color: "#525252" }}>•</span>
-          <span>Patch</span>
+          <span>Cook</span>
           <span style={{ color: "#525252" }}>•</span>
           <span>Offline</span>
         </div>
@@ -111,7 +111,7 @@ export default function OgImage() {
             borderRadius: 999,
           }}
         >
-          v0.4.2 · pip install openremap
+          OpenRemap Harness · coming in v1.0.0 · pip install openremap
         </div>
       </div>
     ),

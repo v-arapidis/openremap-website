@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css";
@@ -10,14 +10,22 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains-mono",
+});
+
 export const metadata: Metadata = {
   title: {
     default: "OpenRemap — Open-Source ECU Binary Toolkit",
     template: "%s | OpenRemap",
   },
   description:
-    "Identify, diff, and patch ECU binaries with OpenRemap. Free, offline, open-source toolkit supporting Bosch, Siemens, Delphi, and Marelli ECUs. No data leaves your machine.",
+    "OpenRemap is the open-source ECU binary intelligence layer — identify, health-check, diff, and tune ECU binaries. Free, offline, no data leaves your machine. OpenRemap Harness, the desktop app, lands with v1.0.0.",
   keywords: [
+    "OpenRemap",
+    "OpenRemap Harness",
     "ECU binary tool",
     "ECU binary identification",
     "ECU remap tool",
@@ -27,36 +35,24 @@ export const metadata: Metadata = {
     "ECU recipe file",
     "WinOLS alternative",
     "ECM Titanium alternative",
-    "Bosch ECU tool",
-    "Bosch EDC16",
     "Bosch EDC17",
+    "Bosch EDC16",
     "Bosch ME7",
-    "Bosch MED17",
-    "Siemens ECU",
+    "Siemens SIMOS",
     "Delphi ECU",
     "Marelli ECU",
-    "ECU binary identify",
-    "ECU flash file tool",
-    "ECU calibration diff",
+    "Denso ECU",
+    "Hitachi ECU",
+    "ECU health check",
+    "ECU checksum",
     "chip tuning tool",
     "ECU file scanner",
-    "openremap",
     "remap recipe",
     "ECU confidence scoring",
-    "ECU family detection",
     "OBD tuning file",
-    "ECU binary analysis",
     "free ECU tool",
     "offline ECU tool",
-    "ECU tuning FAQ",
-    "ECU binary comparison",
-    "ECU tool roadmap",
-    "remap file format",
-    "ECU binary recipe",
-    "safe ECU tuning",
-    "ECU map recognition",
     "tuning workshop tool",
-    "ECU file identification",
     "independent tuner tool",
   ],
   authors: [{ name: "OpenRemap Contributors" }],
@@ -67,13 +63,13 @@ export const metadata: Metadata = {
     siteName: "OpenRemap",
     title: "OpenRemap — Open-Source ECU Binary Toolkit",
     description:
-      "Identify, diff, and patch ECU binaries. Free. Offline. No data leaves your machine.",
+      "Identify, health-check, diff, and tune ECU binaries — free, offline, open source. OpenRemap Harness desktop app coming in v1.0.0.",
   },
   twitter: {
     card: "summary_large_image",
     title: "OpenRemap — Open-Source ECU Binary Toolkit",
     description:
-      "Identify, diff, and patch ECU binaries. Free. Offline. No data leaves your machine.",
+      "Identify, health-check, diff, and tune ECU binaries — free, offline, open source.",
   },
   icons: {
     icon: "/icon.svg",
@@ -94,8 +90,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`}>
-      <body className="flex min-h-screen flex-col bg-[#0a0a0f] font-sans text-neutral-200 antialiased">
+    <html
+      lang="en"
+      className={`dark ${inter.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="flex min-h-screen flex-col bg-bg font-sans text-neutral-200 antialiased">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -105,12 +104,7 @@ export default function RootLayout({
               name: "OpenRemap",
               url: "https://openremap.com",
               description:
-                "Open-source ECU binary toolkit for identification, diffing, and patching.",
-              potentialAction: {
-                "@type": "SearchAction",
-                target: "https://openremap.com/docs?q={search_term_string}",
-                "query-input": "required name=search_term_string",
-              },
+                "Open-source ECU binary intelligence layer — identify, health-check, diff, and tune ECU binaries. Free, offline, and open source.",
             }),
           }}
         />
