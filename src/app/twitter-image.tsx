@@ -5,6 +5,6 @@ export const alt = "OpenRemap — ECU binaries, without the black box · Harness
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-export default function OgImage() {
+export default function TwitterImage() {
   return new ImageResponse(<OgArtwork />, { ...size });
 }

@@ -18,14 +18,15 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "OpenRemap — Open-Source ECU Binary Toolkit",
+    default: "OpenRemap — Open-Source ECU Binary Tool",
     template: "%s | OpenRemap",
   },
   description:
-    "OpenRemap is the open-source ECU binary intelligence layer — identify, health-check, diff, and tune ECU binaries. Free, offline, no data leaves your machine. OpenRemap Harness, the desktop app, lands with v1.0.0.",
+    "Open-source ECU binary intelligence: identify, health-check, checksum-verify, cook & tune. 38 extractor families, 6 OEMs, fully offline. Harness v1.0.0 pending.",
   keywords: [
     "OpenRemap",
     "OpenRemap Harness",
+    "openremap-core",
     "ECU binary tool",
     "ECU binary identification",
     "ECU remap tool",
@@ -40,13 +41,14 @@ export const metadata: Metadata = {
     "Bosch ME7",
     "Siemens SIMOS",
     "Delphi ECU",
-    "Marelli ECU",
+    "Magneti Marelli ECU",
     "Denso ECU",
     "Hitachi ECU",
     "ECU health check",
     "ECU checksum",
     "chip tuning tool",
-    "ECU file scanner",
+    "ECU decoder",
+    "ECU firmware decoder",
     "remap recipe",
     "ECU confidence scoring",
     "OBD tuning file",
@@ -61,15 +63,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://openremap.com",
     siteName: "OpenRemap",
-    title: "OpenRemap — Open-Source ECU Binary Toolkit",
+    title: "OpenRemap — ECU binaries, without the black box",
     description:
-      "Identify, health-check, diff, and tune ECU binaries — free, offline, open source. OpenRemap Harness desktop app coming in v1.0.0.",
+      "Open-source ECU binary intelligence: identify, health-check, checksum-verify, cook & tune. 38 extractor families, 6 OEMs, fully offline. Harness v1.0.0 pending.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "OpenRemap — Open-Source ECU Binary Toolkit",
+    title: "OpenRemap — ECU binaries, without the black box",
     description:
-      "Identify, health-check, diff, and tune ECU binaries — free, offline, open source.",
+      "Open-source ECU binary intelligence: identify, health-check, checksum-verify, cook & tune. 38 extractor families, 6 OEMs, fully offline.",
   },
   icons: {
     icon: "/icon.svg",

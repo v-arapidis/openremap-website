@@ -9,10 +9,9 @@ const GITHUB_URL = "https://github.com/v-arapidis/openremap-core";
 const DOCS_URL = "https://docs.openremap.com";
 
 const navLinks = [
-  { label: "Features", href: "/#features" },
-  { label: "Harness", href: "/#harness" },
-  { label: "Showcase", href: "/#showcase" },
-  { label: "Install", href: "/#install" },
+  { label: "Engine", href: "/#engine" },
+  { label: "Firmware", href: "/#coverage" },
+  { label: "Roadmap", href: "/#roadmap" },
 ];
 
 export function Logo() {
@@ -22,19 +21,19 @@ export function Logo() {
         <svg
           viewBox="0 0 32 32"
           fill="none"
-          className="h-8 w-8 drop-shadow-[0_0_12px_rgba(16,185,129,0.35)]"
+          className="h-7 w-7 drop-shadow-[0_0_12px_rgba(53,240,169,0.35)]"
           aria-hidden="true"
         >
           <path d="M16 2L28.124 9V23L16 30L3.876 23V9L16 2Z" fill="#10b981" />
-          <path d="M16 6L24.66 11V21L16 26L7.34 21V11L16 6Z" fill="#05060a" />
+          <path d="M16 6L24.66 11V21L16 26L7.34 21V11L16 6Z" fill="#03060a" />
           <path
             d="M16 10L21.196 13V19L16 22L10.804 19V13L16 10Z"
-            fill="#34d399"
+            fill="#35f0a9"
           />
         </svg>
       </span>
-      <span className="text-lg font-bold tracking-tight text-ink">
-        Open<span className="text-brand-bright">Remap</span>
+      <span className="font-mono text-[15px] font-bold uppercase tracking-[0.04em] text-ink">
+        Open<span className="text-signal">Remap</span>
       </span>
     </span>
   );
@@ -55,13 +54,13 @@ export default function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-50 w-full border-b transition-all duration-300 ${
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
         scrolled
-          ? "border-edge bg-bg/85 backdrop-blur-xl"
-          : "border-transparent bg-transparent"
+          ? "border-b border-edge bg-bg/90 backdrop-blur-xl"
+          : "border-b border-transparent bg-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
         <Link
           href="/"
           onClick={closeMobileMenu}
@@ -77,7 +76,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-ink-muted transition-colors hover:text-ink"
+              className="font-mono text-[13px] uppercase tracking-[0.12em] text-ink-muted transition-colors hover:text-signal"
             >
               {link.label}
             </Link>
@@ -86,24 +85,26 @@ export default function Header() {
             href={DOCS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-sm font-medium text-ink-muted transition-colors hover:text-ink"
+            className="inline-flex items-center gap-1 font-mono text-[13px] uppercase tracking-[0.12em] text-ink-muted transition-colors hover:text-aqua"
           >
-            Docs <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+            Docs <ExternalLink className="h-3 w-3 opacity-60" />
           </a>
           <a
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted transition-colors hover:text-ink"
+            className="inline-flex items-center gap-1.5 font-mono text-[13px] uppercase tracking-[0.12em] text-ink-muted transition-colors hover:text-signal"
           >
             <GitHubIcon className="h-4 w-4" /> GitHub
           </a>
-          <Link
-            href="/#install"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-bg transition-all hover:bg-brand-bright hover:shadow-[0_0_20px_rgba(16,185,129,0.35)]"
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 border border-signal bg-signal px-4 py-2 font-mono text-[12.5px] font-bold uppercase tracking-[0.12em] text-[#020d07] transition-colors hover:bg-[#5cf5bb]"
           >
-            Get Started <ArrowRight className="h-4 w-4" />
-          </Link>
+            Follow release <ArrowRight className="h-3.5 w-3.5" />
+          </a>
         </div>
 
         {/* Mobile hamburger */}
@@ -124,7 +125,7 @@ export default function Header() {
       <div
         className={`overflow-hidden border-edge bg-bg/95 backdrop-blur-xl transition-all duration-300 lg:hidden ${
           mobileMenuOpen
-            ? "max-h-[420px] border-t opacity-100"
+            ? "max-h-[440px] border-t opacity-100"
             : "max-h-0 border-t-0 opacity-0"
         }`}
       >
@@ -134,7 +135,7 @@ export default function Header() {
               key={link.href}
               href={link.href}
               onClick={closeMobileMenu}
-              className="block px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+              className="block px-3 py-2.5 font-mono text-[13px] uppercase tracking-[0.12em] text-ink-muted transition-colors hover:bg-panel-2 hover:text-signal"
             >
               {link.label}
             </Link>
@@ -144,7 +145,7 @@ export default function Header() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeMobileMenu}
-            className="flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+            className="flex items-center gap-1.5 px-3 py-2.5 font-mono text-[13px] uppercase tracking-[0.12em] text-ink-muted transition-colors hover:bg-panel-2 hover:text-aqua"
           >
             Docs <ExternalLink className="h-3.5 w-3.5 opacity-60" />
           </a>
@@ -153,17 +154,19 @@ export default function Header() {
             target="_blank"
             rel="noopener noreferrer"
             onClick={closeMobileMenu}
-            className="flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium text-ink-muted transition-colors hover:bg-surface-2 hover:text-ink"
+            className="flex items-center gap-1.5 px-3 py-2.5 font-mono text-[13px] uppercase tracking-[0.12em] text-ink-muted transition-colors hover:bg-panel-2 hover:text-signal"
           >
             <GitHubIcon className="h-4 w-4" /> GitHub
           </a>
-          <Link
-            href="/#install"
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             onClick={closeMobileMenu}
-            className="mt-2 flex items-center justify-center gap-1.5 rounded-lg bg-brand px-4 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-brand-bright"
+            className="mt-2 flex items-center justify-center gap-1.5 border border-signal bg-signal px-4 py-2.5 font-mono text-[13px] font-bold uppercase tracking-[0.12em] text-[#020d07]"
           >
-            Get Started <ArrowRight className="h-4 w-4" />
-          </Link>
+            Follow the v1.0.0 release <ArrowRight className="h-4 w-4" />
+          </a>
         </div>
       </div>
     </header>
